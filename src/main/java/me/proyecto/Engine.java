@@ -38,21 +38,23 @@ public class Engine {
                            "║ 3. Pedidos                         ║\n" +
                            "║ 4. Ventas                          ║\n" +
                            "║ 0. SALIR DEL PROGRAMA              ║\n" +
-                           "╚════════════════════════════════════╝");
-        System.out.print("Seleccione una opción (0-4): ");
+                           "╠════════════════════════════════════╝");
+        System.out.print("║ Seleccione una opción (0-4): ");
         String opcion = sc.nextLine();
         switch(opcion) {
             case "0":
-                System.out.println("╔═══════════════════════╗");
-                System.out.println("║ Saliendo del programa ║");
-                System.out.println("╚═══════════════════════╝");
+                System.out.println("╠════════════════════════════════════╗");
+                System.out.println("║       Saliendo Del Programa        ║");
+                System.out.println("╚════════════════════════════════════╝");
                 return true;
             case "1":
+                this.productos.menu();
+                this.productos.closeScanner();
                 return false;
             default:
-                System.out.println("╔═══════════════════════╗");
-                System.out.println("║  Entrada equivocada   ║");
-                System.out.println("╚═══════════════════════╝");
+                System.out.println("╠════════════════════════════════════╗");
+                System.out.println("║          Entrada Erronea           ║");
+                System.out.println("╚════════════════════════════════════╝");
                 pressEnter();
                 return false;
 

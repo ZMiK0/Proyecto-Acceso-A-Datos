@@ -5,9 +5,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
 
 public abstract class Tabla {
-
+    protected Scanner sc;
 
     // Metodo abstracto para insertar
     public abstract void insertar() throws SQLException;
@@ -40,5 +41,16 @@ public abstract class Tabla {
         String password = properties.getProperty("db.password");
 
         return DriverManager.getConnection(url, user, password);
+    }
+
+    public void pressEnter() {
+        System.out.print("║ ");
+        System.console().readLine();
+    }
+
+    protected void closeScanner() {
+        if (sc != null) {
+            sc.close();
+        }
     }
 }
