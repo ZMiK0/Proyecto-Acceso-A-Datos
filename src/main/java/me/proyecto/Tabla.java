@@ -8,6 +8,7 @@ import java.util.Properties;
 
 public abstract class Tabla {
 
+
     // Metodo abstracto para insertar
     public abstract void insertar() throws SQLException;
 
