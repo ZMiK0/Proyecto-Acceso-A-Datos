@@ -15,14 +15,14 @@ public class Pedidos extends Tabla {
     }
     @Override
     public void insertar() throws SQLException {
-        System.out.println("║ Id_proveedor: ");
+        System.out.print("║ ID Producto: ");
         int id_proveedor = sc.nextInt();
-        System.out.println("║ Fecha_Pedido (YYYY-MM-DD)");
+        System.out.print("║ Fecha Pedido (YYYY-MM-DD): ");
         String fecha_pedido = sc.next();
-        System.out.println("║ Cantidad_total: ");
+        System.out.print("║ Cantidad Total: ");
         int cantidad_total = sc.nextInt();
 
-        String sql =  "INSERT INTO Pedidos(Id_proveedor, Fecha_pedido, Cantidad_total) VALUES (?, ?, ?);";
+        String sql =  "INSERT INTO Pedidos(Id_producto, Fecha_pedido, Cantidad_total) VALUES (?, ?, ?);";
 
         try(Connection c = getConnection()){
             PreparedStatement ps = c.prepareStatement(sql);
@@ -30,22 +30,21 @@ public class Pedidos extends Tabla {
             ps.setString(2, fecha_pedido);
             ps.setInt(3, cantidad_total);
             ps.executeUpdate();
-            System.out.println("Pedido insertado correctamente");
         }
     }
 
     @Override
     public void actualizar() throws SQLException {
-        System.out.println("║ Id_pedidos: ");
+        System.out.print("║ ID Pedido: ");
         int id_pedido = sc.nextInt();
-        System.out.println("║ Id_proveedor: ");
+        System.out.print("║ ID Producto: ");
         int id_proveedor = sc.nextInt();
-        System.out.println("║ Fecha_Pedido (YYYY-MM-DD)");
+        System.out.print("║ Fecha Pedido (YYYY-MM-DD): ");
         String fecha_pedido = sc.next();
-        System.out.println("║ Cantidad_total: ");
+        System.out.print("║ Cantidad Total: ");
         int cantidad_total = sc.nextInt();
         
-        String sql = "UPDATE PEDIDOS SET Id_Proveedor = ?, Fecha_pedido = ?, Cantidad_total = ? WHERE Id-pedidos = ?";
+        String sql = "UPDATE PEDIDOS SET Id_Producto = ?, Fecha_pedido = ?, Cantidad_total = ? WHERE Id_pedidos = ?";
         
         try (Connection c = getConnection()){
             PreparedStatement ps = c.prepareStatement(sql);
@@ -54,46 +53,39 @@ public class Pedidos extends Tabla {
             ps.setInt(3, cantidad_total);
             ps.setInt(4, id_pedido);
             ps.executeUpdate();
-            System.out.println("║ Pedido actualizado correctamente.");
         }
     }
 
     @Override
     public void eliminar() throws SQLException {
-        System.out.println("║ Id_pedidos: ");
+        System.out.print("║ ID Pedido: ");
         int id_pedido = sc.nextInt();
 
-        String sql = "DELETE FROM PEDIDOS WHERE Id_Proveedor = ?";
+        String sql = "DELETE FROM PEDIDOS WHERE Id_Pedidos = ?";
 
         try (Connection c = getConnection()){
             PreparedStatement ps = c.prepareStatement(sql);
             ps.setInt(1, id_pedido);
             ps.executeUpdate();
-            System.out.println("Pedido eliminado correctamente");
         }
     }
 
     @Override
-    public List<?> obtenerTodos() throws SQLException {
-        List<?> pedidos = new ArrayList<>();
+    public List<String> obtenerTodos() throws SQLException {
+        List<String> pedidos = new ArrayList<>();
         String sql = "SELECT * FROM PEDIDOS";
-        try (Connection c = getConnection()){
-            PreparedStatement ps = c.prepareStatement(sql);
+        try(Connection c = getConnection();
+            PreparedStatement ps = c.prepareStatement(sql)){
             ResultSet rs = ps.executeQuery();
-          while (rs.next()) {
-            ? pedidos = new Pedido(
-                rs.getInt("Id_pedidos"),
-                rs.getInt("Id_proveedor"),
-                rs.getTimestamp("Fecha_pedido"),
-                rs.getInt("Cantidad_ total")
-            );
-            
-          }
+            while(rs.next()){
+                String pedido = "║ ID[" + rs.getInt("id_pedidos") + "] ID_Producto[" + rs.getInt("id_producto") + "] Fecha_Pedido[" + rs.getDate("Fecha_pedido") + "] Cantidad_total[" + rs.getInt("Cantidad_total") + "]";
+                pedidos.add(pedido);
+            }
         }
         return pedidos;
     }
 
-    public void menu(){
+    public void menu() {
         boolean terminado = false;
         while(!terminado){
             System.out.println("╠════════════════════════════════════╗\n" +
@@ -110,28 +102,67 @@ public class Pedidos extends Tabla {
 
             switch (opcion) {
                 case "0":
+                    System.out.println("╠════════════════════════════════════╗");
+                    System.out.println("║           Cerrando Menu            ║");
+                    System.out.println("╠════════════════════════════════════╝");
                     terminado = true;
                     break;
                 case "1":
-                    insertar();
+                    System.out.println("╠════════════════════════════════════╗");
+                    System.out.println("║        Introduzca los datos        ║");
+                    System.out.println("╠════════════════════════════════════╝");
+                    try {
+                        insertar();
+                        System.out.println("╠════════════════════════════════════╗");
+                        System.out.println("║  Datos Introducidos Correctamente  ║");
+                        System.out.println("╠════════════════════════════════════╝");
+                        this.pressEnter();
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case "2":
-                    actualizar();
+                    System.out.println("╠════════════════════════════════════╗");
+                    System.out.println("║          Modificar Pedido          ║");
+                    System.out.println("╠════════════════════════════════════╝");
+                    try{
+                        actualizar();
+                        System.out.println("╠════════════════════════════════════╗");
+                        System.out.println("║   Pedido Modificado Correctamente  ║");
+                        System.out.println("╠════════════════════════════════════╝");
+                        this.pressEnter();
+                    }catch (SQLException e){
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case "3":
-                    eliminar();
+                    System.out.println("╠════════════════════════════════════╗");
+                    System.out.println("║          Eliminar Pedido           ║");
+                    System.out.println("╠════════════════════════════════════╝");
+                    try{
+                        eliminar();
+                        System.out.println("╠════════════════════════════════════╗");
+                        System.out.println("║   Pedido Eliminada Correctamente   ║");
+                        System.out.println("╠════════════════════════════════════╝");
+                        this.pressEnter();
+                    }catch(SQLException e){
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case "4":
-                try{
-                    List<?> pedidos = obtenerTodos();
-                    for(? p: pedidos){
-                        System.out.println(p);
-
+                    System.out.println("╠════════════════════════════════════╗");
+                    System.out.println("║         Lista de Pedidos           ║");
+                    System.out.println("╠════════════════════════════════════╝");
+                    try{
+                        List<String> pedidos = obtenerTodos();
+                        for (String pedido : pedidos) {
+                            System.out.println(pedido);
+                        }
+                        this.pressEnter();
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
                     }
-                }catch(SQLException e){
-                    System.out.println(e.getMessage());
-                }
-                break;
+                    break;
                 default:
                 System.out.println("Opción inválida");
                     break;

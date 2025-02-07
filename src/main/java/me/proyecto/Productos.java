@@ -37,16 +37,7 @@ public class Productos extends Tabla {
                     System.out.println("║        Introduzca los datos        ║");
                     System.out.println("╠════════════════════════════════════╝");
                     try {
-                        //PODEMOS HACER 2 COSAS, QUE LO DE DEBAJO DE AQUI ESTE DENTRO DE INSERTAR, O PASARLE LOS PARAMETROS A INSERTAR, 1 de las 2. Honestamente prefiero la primera opción
-                        System.out.print("║ Id_proveedor: ");
-                        int id_proveedor = sc.nextInt();
-                        System.out.print("║ Nombre: ");
-                        String nombre = sc.nextLine();
-                        System.out.print("║ Precio: ");
-                        float precio = sc.nextFloat();
-                        System.out.print("║ Stock: ");
-                        int stock = sc.nextInt();
-                        insertar(id_proveedor, nombre, precio, stock);
+                        insertar();
                         System.out.println("╠════════════════════════════════════╗");
                         System.out.println("║  Datos Introducidos Correctamente  ║");
                         System.out.println("╠════════════════════════════════════╝");
@@ -60,17 +51,7 @@ public class Productos extends Tabla {
                     System.out.println("║        Modificar Producto          ║");
                     System.out.println("╠════════════════════════════════════╝");
                     try{
-                        System.out.println("║ Id_producto a modificar: ");
-                        int id = sc.nextInt();
-                        System.out.println("║ Id_proveedor: ");
-                        int id_proveedor = sc.nextInt();
-                        System.out.println("║ Nombre: ");
-                        String nombre = sc.next();
-                        System.out.println("║ Precio: ");
-                        Float precio = sc.nextFloat();
-                        System.out.println("║ Stock: ");
-                        int stock = sc.nextInt();
-                        actualizar(id, id_proveedor, nombre, precio, stock);
+                        actualizar();
                         System.out.println("╠════════════════════════════════════╗");
                         System.out.println("║  Producto Modificado Correctamente ║");
                         System.out.println("╠════════════════════════════════════╝");
@@ -84,9 +65,7 @@ public class Productos extends Tabla {
                     System.out.println("║        Eliminar Producto           ║");
                     System.out.println("╠════════════════════════════════════╝");
                     try{
-                        System.out.println("Id_producto a eliminar: ");
-                        int id = sc.nextInt();
-                        eliminar(id);
+                        eliminar();
                         System.out.println("╠════════════════════════════════════╗");
                         System.out.println("║  Producto Eliminado Correctamente  ║");
                         System.out.println("╠════════════════════════════════════╝");
@@ -100,8 +79,8 @@ public class Productos extends Tabla {
                     System.out.println("║        Lista de Productos          ║");
                     System.out.println("╠════════════════════════════════════╝");
                     try{
-                    List<Producto> productos = (List<Producto>) obtenerTodos();
-                        for (Producto producto : productos) {
+                    List<String> productos = obtenerTodos();
+                        for (String producto : productos) {
                             System.out.println(producto);
                         }
                         this.pressEnter();
@@ -111,7 +90,7 @@ public class Productos extends Tabla {
                     break;
                 default:
                     System.out.println("╠════════════════════════════════════╗");
-                    System.out.println("║  Opción no válida. Intente de nuevo ║");
+                    System.out.println("║ Opción no válida. Intente de nuevo ║");
                     System.out.println("╠════════════════════════════════════╝");
                     break;
             }
@@ -119,7 +98,15 @@ public class Productos extends Tabla {
     }
 
     @Override
-    public void insertar(int id_proveedor, String nombre, float precio, int stock) throws SQLException {
+    public void insertar() throws SQLException {
+        System.out.print("║ Id_proveedor: ");
+        int id_proveedor = sc.nextInt();
+        System.out.print("║ Nombre: ");
+        String nombre = sc.next();
+        System.out.print("║ Precio: ");
+        float precio = sc.nextFloat();
+        System.out.print("║ Stock: ");
+        int stock = sc.nextInt();
         String sql = "INSERT INTO PRODUCTOS (id_proveedor, nombre, precio, stock) VALUES (?, ?, ?, ?)";
         try (Connection c = getConnection();
         PreparedStatement ps = c.prepareStatement(sql)){
@@ -132,8 +119,18 @@ public class Productos extends Tabla {
     }
 
     @Override
-    public void actualizar(int id, int id_proveedor, String nombre, float precio, int stock) throws SQLException {
-        String sql = "UPDATE PRODUCTOS SET id_proveedor = ?, nombre = ?, precio = ?, stock = ? WHERE id = ?";
+    public void actualizar() throws SQLException {
+        System.out.print("║ Id_producto a modificar: ");
+        int id = sc.nextInt();
+        System.out.print("║ Id_proveedor: ");
+        int id_proveedor = sc.nextInt();
+        System.out.print("║ Nombre: ");
+        String nombre = sc.next();
+        System.out.print("║ Precio: ");
+        Float precio = sc.nextFloat();
+        System.out.print("║ Stock: ");
+        int stock = sc.nextInt();
+        String sql = "UPDATE PRODUCTOS SET id_proveedor = ?, nombre = ?, precio = ?, stock = ? WHERE id_producto = ?";
         try (Connection c = getConnection();
         PreparedStatement ps = c.prepareStatement(sql)){
             ps.setInt(1, id_proveedor);
@@ -146,31 +143,26 @@ public class Productos extends Tabla {
     }
 
     @Override
-    public void eliminar(int id) throws SQLException {
-        String sql = "DELETE FROM PRODUCTOS WHERE id = ?";
+    public void eliminar() throws SQLException {
+        System.out.print("║ ID del producto a eliminar: ");
+        int id = sc.nextInt();
+        String sql = "DELETE FROM PRODUCTOS WHERE id_producto = ?";
         try (Connection c = getConnection();
             PreparedStatement ps = c.prepareStatement(sql)){
                 ps.setInt(1, id);
                 ps.executeUpdate();
             }
-
     }
 
     @Override
-    public List<Producto> obtenerTodos() throws SQLException {
-        List<Producto> productos = new ArrayList<>();
+    public List<String> obtenerTodos() throws SQLException {
+        List<String> productos = new ArrayList<>();
         String sql = "SELECT * FROM PRODUCTOS";
         try(Connection c = getConnection();
             PreparedStatement ps = c.prepareStatement(sql)){
             ResultSet rs = ps.executeQuery();
           while(rs.next()){
-            Producto producto = new Producto(
-                rs.getInt("id"),
-                rs.getInt("id_proveedor"),
-                rs.getString("nombre"),
-                rs.getFloat("precio"),
-                rs.getInt("stock")
-            );
+            String producto = "║ ID[" + rs.getInt("id_producto") + "] ID_Proveedor[" + rs.getInt("id_proveedor") + "] Nombre[" + rs.getString("nombre") + "] Precio[" + rs.getFloat("precio") + "€] Stock[" + rs.getInt("stock") + "]";
             productos.add(producto);
           }
         }

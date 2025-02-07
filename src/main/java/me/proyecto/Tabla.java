@@ -10,13 +10,10 @@ import java.util.Scanner;
 public abstract class Tabla {
     protected Scanner sc;
 
-    // Metodo abstracto para insertar
     public abstract void insertar() throws SQLException;
 
-    // Metodo abstracto para actualizar
     public abstract void actualizar() throws SQLException;
 
-    // Metodo abstracto para eliminar
     public abstract void eliminar() throws SQLException;
 
     // Metodo para obtener todos los registros de la tabla

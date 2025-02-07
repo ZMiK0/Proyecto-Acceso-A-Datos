@@ -40,16 +40,25 @@ public class Engine {
                            "║ 0. SALIR DEL PROGRAMA              ║\n" +
                            "╠════════════════════════════════════╝");
         System.out.print("║ Seleccione una opción (0-4): ");
-        String opcion = sc.nextLine();
+        String opcion = sc.next();
         switch(opcion) {
             case "0":
                 System.out.println("╠════════════════════════════════════╗");
                 System.out.println("║       Saliendo Del Programa        ║");
                 System.out.println("╚════════════════════════════════════╝");
+                this.productos.closeScanner();
                 return true;
             case "1":
                 this.productos.menu();
-                this.productos.closeScanner();
+                return false;
+            case "2":
+                this.proveedores.menu();
+                return false;
+            case "3":
+                this.pedidos.menu();
+                return false;
+            case "4":
+                this.ventas.menu();
                 return false;
             default:
                 System.out.println("╠════════════════════════════════════╗");
