@@ -14,6 +14,10 @@ public class Proveedores extends Tabla {
         this.sc = new Scanner(System.in);
     }
 
+    /**
+     * Inserta un proveedor
+     * @throws SQLException
+     */
     @Override
     public void insertar() throws SQLException {
         System.out.print("║ Nombre: ");
@@ -33,6 +37,10 @@ public class Proveedores extends Tabla {
         }
     }
 
+    /**
+     * Actualiza un proveedor
+     * @throws SQLException
+     */
     @Override
     public void actualizar() throws SQLException {
         System.out.print("║ ID Proveedor: ");
@@ -55,6 +63,10 @@ public class Proveedores extends Tabla {
         }
     }
 
+    /**
+     * Elimina un proveedor
+     * @throws SQLException
+     */
     @Override
     public void eliminar() throws SQLException {
         System.out.print("║ ID Proveedor: ");
@@ -68,6 +80,11 @@ public class Proveedores extends Tabla {
         }
     }
 
+    /**
+     * Obtiene todos los proveedores
+     * @return Lista de proveedores
+     * @throws SQLException
+     */
     @Override
     public List<String> obtenerTodos() throws SQLException {
         List<String> proveedores = new ArrayList<>();
@@ -83,6 +100,9 @@ public class Proveedores extends Tabla {
         return proveedores;
     }
 
+    /**
+     * Menu de proveedores
+     */
     public void menu() {
         boolean terminado = false;
         while (!terminado) {
@@ -162,7 +182,9 @@ public class Proveedores extends Tabla {
                     }
                     break;
                 default:
-                    System.out.println("║ Opción no válida. Intente de nuevo.");
+                    System.out.println("╠════════════════════════════════════╗");
+                    System.out.println("║ Opción no válida. Intente de nuevo ║");
+                    System.out.println("╠════════════════════════════════════╝");
                     break;
             }
         }

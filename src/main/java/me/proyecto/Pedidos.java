@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -13,26 +14,75 @@ public class Pedidos extends Tabla {
     public Pedidos(){
         this.sc = new Scanner(System.in);
     }
+
+    /**
+     * Inserta un pedido
+     * @throws SQLException
+     */
     @Override
     public void insertar() throws SQLException {
+        List<String> productos = new ArrayList<>();
+        String sql = "SELECT * FROM PRODUCTOS";
+        try (Connection c = getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String producto = "║ ID[" + rs.getInt("id_producto") + "] Nombre[" + rs.getString("nombre") + "] Precio[" + rs.getFloat("precio") + "€] Stock[" + rs.getInt("stock") + "]";
+                productos.add(producto);
+            }
+        }
+        for (String producto : productos) {
+            System.out.println(producto);
+        }
+
         System.out.print("║ ID Producto: ");
-        int id_proveedor = sc.nextInt();
+        int id_producto = sc.nextInt();
         System.out.print("║ Fecha Pedido (YYYY-MM-DD): ");
         String fecha_pedido = sc.next();
         System.out.print("║ Cantidad Total: ");
         int cantidad_total = sc.nextInt();
 
-        String sql =  "INSERT INTO Pedidos(Id_producto, Fecha_pedido, Cantidad_total) VALUES (?, ?, ?);";
+        if (cantidad_total < 0) {
+            System.out.println("║ Error: La cantidad no puede ser negativa.");
+            return;
+        }
 
-        try(Connection c = getConnection()){
-            PreparedStatement ps = c.prepareStatement(sql);
-            ps.setInt(1, id_proveedor);
-            ps.setString(2, fecha_pedido);
-            ps.setInt(3, cantidad_total);
-            ps.executeUpdate();
+        String sql2 = "INSERT INTO Pedidos(Id_producto, Fecha_pedido, Cantidad_total) VALUES (?, ?, ?);";
+        String sql3 = "UPDATE Productos SET Stock = Stock + ? WHERE Id_producto = ?";
+
+        try (Connection c = getConnection()) {
+
+            try (PreparedStatement ps = c.prepareStatement(sql2);
+                 PreparedStatement ps2 = c.prepareStatement(sql3)) {
+
+                String sql4 = "SELECT COUNT(*) FROM Productos WHERE Id_producto = ?";
+                try (PreparedStatement ps3 = c.prepareStatement(sql4)) {
+                    ps3.setInt(1, id_producto);
+                    try (ResultSet rs = ps3.executeQuery()) {
+                        if (rs.next() && rs.getInt(1) == 0) {
+                            System.out.println("Error: El producto con ID " + id_producto + " no existe.");
+                            return;
+                        }
+                    }
+                }
+
+                ps.setInt(1, id_producto);
+                ps.setString(2, fecha_pedido);
+                ps.setInt(3, cantidad_total);
+                ps.executeUpdate();
+
+                ps2.setInt(1, cantidad_total);
+                ps2.setInt(2, id_producto);
+                ps2.executeUpdate();
+            }
         }
     }
 
+
+    /**
+     * Actualiza un pedido (EN DESUSO)
+     * @throws SQLException
+     */
     @Override
     public void actualizar() throws SQLException {
         System.out.print("║ ID Pedido: ");
@@ -56,6 +106,10 @@ public class Pedidos extends Tabla {
         }
     }
 
+    /**
+     * Elimina un pedido
+     * @throws SQLException
+     */
     @Override
     public void eliminar() throws SQLException {
         System.out.print("║ ID Pedido: ");
@@ -70,6 +124,11 @@ public class Pedidos extends Tabla {
         }
     }
 
+    /**
+     * Obtiene todos los pedidos
+     * @return Lista de pedidos
+     * @throws SQLException
+     */
     @Override
     public List<String> obtenerTodos() throws SQLException {
         List<String> pedidos = new ArrayList<>();
@@ -85,6 +144,9 @@ public class Pedidos extends Tabla {
         return pedidos;
     }
 
+    /**
+     * Menu de pedidos
+     */
     public void menu() {
         boolean terminado = false;
         while(!terminado){
@@ -92,9 +154,8 @@ public class Pedidos extends Tabla {
                                "║          Menu Pedidos              ║\n" +
                                "╠════════════════════════════════════╣\n" +
                                "║ 1. Insertar Nueva Entrada          ║\n" +
-                               "║ 2. Modificar Entrada               ║\n" +
-                               "║ 3. Eliminar Entrada                ║\n" +
-                               "║ 4. Obtener Pedidos                 ║\n" +
+                               "║ 2. Eliminar Entrada                ║\n" +
+                               "║ 3. Obtener Pedidos                 ║\n" +
                                "║ 0. SALIR                           ║\n" +
                                "╠════════════════════════════════════╝");
             System.out.print("║ Seleccione una opción (0-4): ");
@@ -118,38 +179,32 @@ public class Pedidos extends Tabla {
                         System.out.println("╠════════════════════════════════════╝");
                         this.pressEnter();
                     } catch (SQLException e) {
-                        System.out.println(e.getMessage());
+                        System.out.println("╠════════════════════════════════════╗");
+                        System.out.println("║ Producto Inexistente/Fecha Errónea ║");
+                        System.out.println("╠════════════════════════════════════╝");
+                        this.pressEnter();
+                    } catch (InputMismatchException e) {
+                        System.out.println("╠════════════════════════════════════╗");
+                        System.out.println("║         Entrada Equivocada         ║");
+                        System.out.println("╠════════════════════════════════════╝");
+                        this.pressEnter();
                     }
                     break;
                 case "2":
-                    System.out.println("╠════════════════════════════════════╗");
-                    System.out.println("║          Modificar Pedido          ║");
-                    System.out.println("╠════════════════════════════════════╝");
-                    try{
-                        actualizar();
-                        System.out.println("╠════════════════════════════════════╗");
-                        System.out.println("║   Pedido Modificado Correctamente  ║");
-                        System.out.println("╠════════════════════════════════════╝");
-                        this.pressEnter();
-                    }catch (SQLException e){
-                        System.out.println(e.getMessage());
-                    }
-                    break;
-                case "3":
                     System.out.println("╠════════════════════════════════════╗");
                     System.out.println("║          Eliminar Pedido           ║");
                     System.out.println("╠════════════════════════════════════╝");
                     try{
                         eliminar();
                         System.out.println("╠════════════════════════════════════╗");
-                        System.out.println("║   Pedido Eliminada Correctamente   ║");
+                        System.out.println("║   Pedido Eliminado Correctamente   ║");
                         System.out.println("╠════════════════════════════════════╝");
                         this.pressEnter();
                     }catch(SQLException e){
                         System.out.println(e.getMessage());
                     }
                     break;
-                case "4":
+                case "3":
                     System.out.println("╠════════════════════════════════════╗");
                     System.out.println("║         Lista de Pedidos           ║");
                     System.out.println("╠════════════════════════════════════╝");
@@ -164,7 +219,9 @@ public class Pedidos extends Tabla {
                     }
                     break;
                 default:
-                System.out.println("Opción inválida");
+                    System.out.println("╠════════════════════════════════════╗");
+                    System.out.println("║ Opción no válida. Intente de nuevo ║");
+                    System.out.println("╠════════════════════════════════════╝");
                     break;
             }
         }

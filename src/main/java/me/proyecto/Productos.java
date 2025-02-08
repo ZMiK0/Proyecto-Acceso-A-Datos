@@ -2,6 +2,7 @@ package me.proyecto;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -11,92 +12,10 @@ public class Productos extends Tabla {
         this.sc = new Scanner(System.in);
     }
 
-    public void menu() {
-        boolean terminado = false;
-        while (!terminado) {
-            System.out.println("╠════════════════════════════════════╗\n" +
-                               "║          Menu Productos            ║\n" +
-                               "╠════════════════════════════════════╣\n" +
-                               "║ 1. Insertar Nueva Entrada          ║\n" +
-                               "║ 2. Modificar Entrada               ║\n" +
-                               "║ 3. Eliminar Entrada                ║\n" +
-                               "║ 4. Obtener Productos               ║\n" +
-                               "║ 0. SALIR                           ║\n" +
-                               "╠════════════════════════════════════╝");
-            System.out.print("║ Seleccione una opción (0-4): ");
-            String opcion = sc.next();
-            switch(opcion) {
-                case "0":
-                    System.out.println("╠════════════════════════════════════╗");
-                    System.out.println("║           Cerrando Menu            ║");
-                    System.out.println("╠════════════════════════════════════╝");
-                    terminado = true;
-                    break;
-                case "1":
-                    System.out.println("╠════════════════════════════════════╗");
-                    System.out.println("║        Introduzca los datos        ║");
-                    System.out.println("╠════════════════════════════════════╝");
-                    try {
-                        insertar();
-                        System.out.println("╠════════════════════════════════════╗");
-                        System.out.println("║  Datos Introducidos Correctamente  ║");
-                        System.out.println("╠════════════════════════════════════╝");
-                        this.pressEnter();
-                    } catch (SQLException e) {
-                        System.out.println(e.getMessage());
-                    }
-                    break;
-                case "2":
-                    System.out.println("╠════════════════════════════════════╗");
-                    System.out.println("║        Modificar Producto          ║");
-                    System.out.println("╠════════════════════════════════════╝");
-                    try{
-                        actualizar();
-                        System.out.println("╠════════════════════════════════════╗");
-                        System.out.println("║  Producto Modificado Correctamente ║");
-                        System.out.println("╠════════════════════════════════════╝");
-                        this.pressEnter();
-                    }catch (SQLException e){
-                        System.out.println(e.getMessage());
-                    }
-                    break;
-                case "3":
-                    System.out.println("╠════════════════════════════════════╗");
-                    System.out.println("║        Eliminar Producto           ║");
-                    System.out.println("╠════════════════════════════════════╝");
-                    try{
-                        eliminar();
-                        System.out.println("╠════════════════════════════════════╗");
-                        System.out.println("║  Producto Eliminado Correctamente  ║");
-                        System.out.println("╠════════════════════════════════════╝");
-                        this.pressEnter();
-                    }catch(SQLException e){
-                        System.out.println(e.getMessage());
-                    }
-                    break;
-                case "4":
-                    System.out.println("╠════════════════════════════════════╗");
-                    System.out.println("║        Lista de Productos          ║");
-                    System.out.println("╠════════════════════════════════════╝");
-                    try{
-                    List<String> productos = obtenerTodos();
-                        for (String producto : productos) {
-                            System.out.println(producto);
-                        }
-                        this.pressEnter();
-                    } catch (SQLException e) {
-                        System.out.println(e.getMessage());
-                    }
-                    break;
-                default:
-                    System.out.println("╠════════════════════════════════════╗");
-                    System.out.println("║ Opción no válida. Intente de nuevo ║");
-                    System.out.println("╠════════════════════════════════════╝");
-                    break;
-            }
-        }
-    }
-
+    /**
+     * Inserta un producto
+     * @throws SQLException
+     */
     @Override
     public void insertar() throws SQLException {
         System.out.print("║ Id_proveedor: ");
@@ -118,6 +37,10 @@ public class Productos extends Tabla {
         }
     }
 
+    /**
+     * Actualiza un producto
+     * @throws SQLException
+     */
     @Override
     public void actualizar() throws SQLException {
         System.out.print("║ Id_producto a modificar: ");
@@ -142,6 +65,10 @@ public class Productos extends Tabla {
         }
     }
 
+    /**
+     * Elimina un producto
+     * @throws SQLException
+     */
     @Override
     public void eliminar() throws SQLException {
         System.out.print("║ ID del producto a eliminar: ");
@@ -154,6 +81,11 @@ public class Productos extends Tabla {
             }
     }
 
+    /**
+     * Obtiene todos los productos
+     * @return Lista de productos
+     * @throws SQLException
+     */
     @Override
     public List<String> obtenerTodos() throws SQLException {
         List<String> productos = new ArrayList<>();
@@ -167,5 +99,111 @@ public class Productos extends Tabla {
           }
         }
         return productos;
+    }
+
+    /**
+     * Menu productos
+     */
+    public void menu() {
+        boolean terminado = false;
+        while (!terminado) {
+            System.out.println("╠════════════════════════════════════╗\n" +
+                    "║          Menu Productos            ║\n" +
+                    "╠════════════════════════════════════╣\n" +
+                    "║ 1. Insertar Nueva Entrada          ║\n" +
+                    "║ 2. Modificar Entrada               ║\n" +
+                    "║ 3. Eliminar Entrada                ║\n" +
+                    "║ 4. Obtener Productos               ║\n" +
+                    "║ 0. SALIR                           ║\n" +
+                    "╠════════════════════════════════════╝");
+            System.out.print("║ Seleccione una opción (0-4): ");
+            String opcion = sc.next();
+            switch(opcion) {
+                case "0":
+                    System.out.println("╠════════════════════════════════════╗");
+                    System.out.println("║           Cerrando Menu            ║");
+                    System.out.println("╠════════════════════════════════════╝");
+                    terminado = true;
+                    break;
+                case "1":
+                    System.out.println("╠════════════════════════════════════╗");
+                    System.out.println("║        Introduzca los datos        ║");
+                    System.out.println("╠════════════════════════════════════╝");
+                    try {
+                        insertar();
+                        System.out.println("╠════════════════════════════════════╗");
+                        System.out.println("║  Datos Introducidos Correctamente  ║");
+                        System.out.println("╠════════════════════════════════════╝");
+                        this.pressEnter();
+                    } catch (SQLException e) {
+                        System.out.println("╠════════════════════════════════════╗");
+                        System.out.println("║      Proveedor No Existente        ║");
+                        System.out.println("╠════════════════════════════════════╝");
+                        this.pressEnter();
+                    } catch (InputMismatchException e) {
+                        System.out.println("╠════════════════════════════════════╗");
+                        System.out.println("║         Entrada Equivocada         ║");
+                        System.out.println("╠════════════════════════════════════╝");
+                        this.pressEnter();
+                    }
+                    break;
+                case "2":
+                    System.out.println("╠════════════════════════════════════╗");
+                    System.out.println("║        Modificar Producto          ║");
+                    System.out.println("╠════════════════════════════════════╝");
+                    try{
+                        actualizar();
+                        System.out.println("╠════════════════════════════════════╗");
+                        System.out.println("║  Producto Modificado Correctamente ║");
+                        System.out.println("╠════════════════════════════════════╝");
+                        this.pressEnter();
+                    }catch (SQLException e){
+                        System.out.println("╠════════════════════════════════════╗");
+                        System.out.println("║      Proveedor No Existente        ║");
+                        System.out.println("╠════════════════════════════════════╝");
+                        this.pressEnter();
+                    } catch (InputMismatchException e) {
+                        System.out.println("╠════════════════════════════════════╗");
+                        System.out.println("║         Entrada Equivocada         ║");
+                        System.out.println("╠════════════════════════════════════╝");
+                        this.pressEnter();
+                    }
+
+                    break;
+                case "3":
+                    System.out.println("╠════════════════════════════════════╗");
+                    System.out.println("║        Eliminar Producto           ║");
+                    System.out.println("╠════════════════════════════════════╝");
+                    try{
+                        eliminar();
+                        System.out.println("╠════════════════════════════════════╗");
+                        System.out.println("║  Producto Eliminado Correctamente  ║");
+                        System.out.println("╠════════════════════════════════════╝");
+                        this.pressEnter();
+                    }catch(SQLException e){
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case "4":
+                    System.out.println("╠════════════════════════════════════╗");
+                    System.out.println("║        Lista de Productos          ║");
+                    System.out.println("╠════════════════════════════════════╝");
+                    try{
+                        List<String> productos = obtenerTodos();
+                        for (String producto : productos) {
+                            System.out.println(producto);
+                        }
+                        this.pressEnter();
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                default:
+                    System.out.println("╠════════════════════════════════════╗");
+                    System.out.println("║ Opción no válida. Intente de nuevo ║");
+                    System.out.println("╠════════════════════════════════════╝");
+                    break;
+            }
+        }
     }
 }
